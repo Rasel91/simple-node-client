@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 import './App.css';
 
 function App() {
-  const [user, setUser] = useState([]);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     fetch('http://localhost:5000/users')
       .then(res => res.json())
-      .then(data => setUser(data))
+      .then(data => setUsers(data))
   }, [])
 
   const handleAddUser = event => {
@@ -20,14 +20,20 @@ function App() {
     console.log(user);
 
     fetch('http://localhost:5000/users', {
+
       method: 'POST',
       headers: {
-        'Content-type': 'application/json'
+        'content-type': 'application/json'
       },
       body: JSON.stringify(user)
     })
       .then(res => res.json())
-      .then(data => console.log(data))
+      .then(data => {
+        console.log(data);
+        const newUsers = [...users, data];
+        setUsers(newUsers)
+
+      })
       .catch(err => console.error(err))
 
     event.target.reset()
@@ -37,7 +43,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>User: {user.length}</h1>
+      <h1>User: {users.length}</h1>
 
       <form onSubmit={handleAddUser}>
         <input type="text" name='name' placeholder='Name' />
@@ -49,9 +55,9 @@ function App() {
 
       <div>
         {
-          user.map(user => <p
+          users.map(user => <p
             key={user.id}>
-            {user.name}
+            {user.name}, :
             {user.email}
           </p>)
         }
